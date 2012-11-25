@@ -18,7 +18,7 @@
         , skewness/1
         , kurtosis/1
 
-        %% Two-pass functions (numerically robust)
+        %% Multi-pass functions (numerically robust)
         , variance/1
         , variance_unbiased/1
         , mean_variance/1
@@ -129,12 +129,12 @@ central_moments(A, B, XS) ->
 %% its mass is on the right of the distribution, with the tail on the
 %% left.
 %%
-%% 1> skewness([1,100,101,102,103])
+%% 1> skewness([1,100,101,102,103]).
 %% -1.497681449918257607
 %%
 %% A sample with positive skew is said to be "right-skewed".
 %%
-%% 2> skewness([1,2,3,4,100])
+%% 2> skewness([1,2,3,4,100]).
 %% 1.4975367033335198
 %%
 %% A sample's skewness is not defined if its 'variance' is zero.
