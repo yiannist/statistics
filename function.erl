@@ -51,10 +51,8 @@ next_highest_power_of_two(N) ->
 -spec within(integer(), float(), float()) -> boolean().
 within(Ulps, A, B) ->
     %% XXX: Translate a float to integer! Don't try this at home...
-    <<Aii/binary>> = <<A/float>>,
-    <<Ai0:64/integer>> = Aii,
-    <<Bii/binary>> = <<B/float>>,
-    <<Bi0:64/integer>> = Bii,
+    <<Ai0:64/integer-signed>> = <<A/float>>,
+    <<Bi0:64/integer-signed>> = <<B/float>>,
     Big = 16#8000000000000000,
     Ai = case Ai0 < 0 of
              true  -> Big - Ai0;
