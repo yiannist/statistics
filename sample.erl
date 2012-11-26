@@ -286,7 +286,7 @@ fast_std_dev(Samp) ->
     math:sqrt(fast_variance(Samp)).
 
 
-%% References
+%% References:
 %%
 %% * Chan, T. F.; Golub, G.H.; LeVeque, R.J. (1979) Updating formulae
 %%   and a pairwise algorithm for computing sample
