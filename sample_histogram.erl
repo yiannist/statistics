@@ -41,6 +41,7 @@ histogram_(NumBins, Lo, Hi, XS0) ->
     true = ets:insert(Bins, [{I, 0.0} || I <- lists:seq(0, NumBins - 1)]),
     Bins = Bin(XS0, Bins),        % Fills 'Bins' ETS table through side-effects!
     {_, Elems} = lists:unzip(ets:tab2list(Bins)),
+    true = ets:delete(Bins),
     Elems.
 
 -spec histogram__go([float()], float(), float(), integer(), integer()
