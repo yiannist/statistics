@@ -39,12 +39,13 @@ autocorrelation(A) ->
     CI = fun (F) -> [1 | tl(lists:map(fun (X) -> F(-1 / L, X) end, DLLSE))] end,
     {R, CI(fun (X, Y) -> X - Y end), CI(fun (X, Y) -> X + Y end)}.
 
-%% Utility function
-scanl(F, Q, LS) ->
-    [Q | case LS of
-             []       -> [];
-             [X | XS] -> scanl(F, F(Q, X), XS)
-         end].
+%% Utility functions
 
+%%-type scan_fun(A, B) :: fun ((A) -> fun ((B) -> A)).
+%%-spec scanl(scan_fun(A, B), A, [B]) -> [A].
+scanl(_, Q, [])     -> [Q];
+scanl(F, Q, [X|XS]) -> [Q | scanl(F, F(Q, X), XS)].
+
+%%-spec scanl1(scan_fun(A, A), [A]) -> [A].
 scanl1(F, [X|XS]) -> scanl(F, X, XS);
 scanl1(_, [])     -> [].
