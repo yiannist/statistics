@@ -36,7 +36,8 @@ weightedAvg(K, Q, X) ->
 %% Estimate the k-th q-quantile of a sample 'x', using the continuous
 %% sample method with the given parameters. This is the method used by
 %% most statistical software, such as R, Mathematica, SPSS, and S.
--spec continuous_by({float(), float()}, integer(), integer(), [float()]) -> float().
+-spec continuous_by({float(), float()}, integer(), integer(), [float()])
+                   -> float().
 continuous_by({A, B}, K, Q, X) ->
     true = Q >= 2,
     true = K >= 0,
@@ -68,6 +69,7 @@ continuous_by({A, B}, K, Q, X) ->
 midspread({A, B}, K, X) ->
     true = K > 0,
     N = length(X),
+    Frac = 1 / K,
     Eps = sample_histogram:m_epsilon() * 4,
     T = fun (I) -> A + I * (N + 1 - A - B) end,
     J = fun (I) -> sample_powers:floor(T(I) + Eps) end,
@@ -82,6 +84,54 @@ midspread({A, B}, K, X) ->
     Bracket = fun (M) -> min(max(M, 0), N - 1) end,
     SX = lists:sort(X), %STUB: should be partial_sort!
     Item = fun (I) -> lists:nth(Bracket(I) + 1, SX) end,
-    Frac = 1 / K,
-    Quantile = fun (I) -> (1 - H(I)) * Item(J(I - 1)) + H(I) * Item(J(I)) end,
+    Quantile = fun (I) -> (1 - H(I)) * Item(J(I) - 1) + H(I) * Item(J(I)) end,
     Quantile(1 - Frac) - Quantile(Frac).
+
+%% California Department of Public Works definition, a=0, b=1.
+%% Gives a linear interpolation of the empirical CDF.  This
+%% corresponds to method 4 in R and Mathematica.
+-spec cadpw() -> {float(), float()}.
+cadpw() -> {0.0, 1.0}.
+
+%% Hazen's definition, a=0.5, b=0.5. This is claimed to be
+%% popular among hydrologists. This corresponds to method 5 in R and
+%% Mathematica.
+-spec hazen() -> {float(), float()}.
+hazen() -> {0.5, 0.5}.
+
+%% Definition used by the SPSS statistics application, with a=0,
+%% b=0 (also known as Weibull's definition). This corresponds to
+%% method 6 in R and Mathematica.
+-spec spss() -> {float(), float()}.
+spss() -> {0.0, 0.0}.
+
+%% Definition used by the S statistics application, with a=1,
+%% b=1. The interpolation points divide the sample range into n-1
+%% intervals. This corresponds to method 7 in R and Mathematica.
+-spec s() -> {float(), float()}.
+s() -> {1.0, 1.0}.
+
+%% Median unbiased definition, a=1/3, b=1/3. The resulting
+%% quantile estimates are approximately median unbiased regardless of
+%% the distribution of x. This corresponds to method 8 in R and
+%% Mathematica.
+-spec medianUnbiased() -> {float(), float()}.
+medianUnbiased() -> {1/3, 1/3}.
+
+
+%% Normal unbiased definition, a=3/8, b=3/8. An approximately
+%% unbiased estimate if the empirical distribution approximates the
+%% normal distribution.  This corresponds to method 9 in R and
+%% Mathematica.
+-spec normalUnbiased() -> {float(), float()}.
+normalUnbiased() -> {3/8, 3/8}.
+
+
+%% References:
+%%
+%% * Weisstein, E.W. Quantile. /MathWorld/.
+%%   <http://mathworld.wolfram.com/Quantile.html>
+%%
+%% * Hyndman, R.J.; Fan, Y. (1996) Sample quantiles in statistical
+%%   packages. /American Statistician/
+%%   50(4):361&#8211;365. <http://www.jstor.org/stable/2684934>
