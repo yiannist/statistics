@@ -1,10 +1,30 @@
 -module(sample_powers).
 
--compile(export_all).
+-export([
+        %% Constructor
+          powers/2
+        %% Descriptive functions
+        , order/1
+        , count/1
+        , sum/1
+        %% Statistics of location
+        , mean/1
+        %% Statistics of dispersion
+        , variance/1
+        , std_dev/1
+        , variance_unbiased/1
+        %% Functions over central moments
+        , central_moment/2
+        , skewness/1
+        , kurtosis/1
+        %% Utility
+        , floor/1
+        ]).
 
 -export_type([
-	       powers/0
-	     ]).
+             %% Types
+               powers/0
+             ]).
 
 %% Fast statistics over simple powers of a sample. These can all be
 %% computed efficiently (in just a single (?) pass over a sample).
@@ -32,19 +52,19 @@ powers(K, XS) ->
     L = K + 1,
     T = ets:new(tab, [named_table]),
     true = ets:insert(T, lists:zip(lists:seq(0, L-1),
-				   lists:duplicate(L, 0.0))), % mutable.
+                                   lists:duplicate(L, 0.0))), % mutable.
     Go = fun (X, MS) ->
-		 ok = powers__loop({MS, X, L}, 0, 1),
-		 MS
-	 end,
+                 ok = powers__loop({MS, X, L}, 0, 1),
+                 MS
+         end,
     T = lists:foldl(Go, T, XS),
     {_, PS} = lists:unzip(lists:sort(fun ({A1, _}, {A2, _}) -> A1 < A2 end,
-				     ets:tab2list(T))), % freeze.
+                                     ets:tab2list(T))), % freeze.
     true = ets:delete(T),
     {'powers', lists:sort(PS)}.
 
 -spec powers__loop({ets:tab(), float(), integer()}, integer(), integer())
-		  -> ok.
+                  -> ok.
 powers__loop({_, _, L}, I, _) when I == L -> ok; % MSTab is "global".
 powers__loop({MSTab, X, L}, I, XK) ->
     [{I, M}] = ets:lookup(MSTab, I), % 'I' intentionally the same
@@ -64,14 +84,14 @@ order({'powers', XS}) ->
 central_moment(0, _) -> 1;
 central_moment(K, P={'powers', PA}) ->
     case ((K < 0) or (K > order(P))) of
-	true  -> error({?MODULE, central_moment, "invalid argument"});
-	false -> N = hd(PA),
-		 M = mean(P),
-		 Go = fun ({I, E}) ->
-			      spec_functions:choose(K, I) * math:pow(-M, K-I) * E
-		      end,
-		 Indexed = function:indexed(lists:sublist(PA, K + 1)),
-		 lists:sum(lists:map(Go, Indexed)) / N
+        true  -> error({?MODULE, central_moment, "invalid argument"});
+        false -> N = hd(PA),
+                 M = mean(P),
+                 Go = fun ({I, E}) ->
+                              spec_functions:choose(K, I) * math:pow(-M, K-I) * E
+                      end,
+                 Indexed = function:indexed(lists:sublist(PA, K + 1)),
+                 lists:sum(lists:map(Go, Indexed)) / N
     end.
 
 %% Maximum likelihood estimate of a sample's variance.  Also known
@@ -149,8 +169,8 @@ count({'powers', PA}) ->
 floor(X) ->
     T = erlang:trunc(X),
     case (X - T) < 0 of
-	true  -> T - 1;
-	false -> T
+        true  -> T - 1;
+        false -> T
     end.
 
 %% The sum of elements in the original 'Sample'.  This is the

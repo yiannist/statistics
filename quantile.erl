@@ -1,6 +1,18 @@
 -module(quantile).
 
--compile(export_all).
+-export([
+        %% Quantile estimation functions
+          weightedAvg/3
+        , continuous_by/4
+        , midspread/3
+        %% Parameters for the continuous sample method
+        , cadpw/0
+        , hazen/0
+        , s/0
+        , spss/0
+        , medianUnbiased/0
+        , normalUnbiased/0
+        ]).
 
 %% Functions for approximating quantiles, i.e. points taken at regular
 %% intervals from the cumulative distribution function of a random
