@@ -5,6 +5,8 @@
         %% Building blocks
         , histogram_/4
         , range/2
+        %% Helper
+        , m_epsilon/0
         ]).
 
 %% Compute a histogram over a data set.
