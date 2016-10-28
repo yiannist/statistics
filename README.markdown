@@ -10,3 +10,8 @@ implementing Criterlion (a port of Haskell Criterion in Erlang).
 Note
 ----
 I hope this doesn't violate the initial software license. :-)
+
+Build
+-----
+
+    $ rebar3 compile
